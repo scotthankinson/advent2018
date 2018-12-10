@@ -1,106 +1,137 @@
 "use strict";
 // tslint:disable
 import fs = require('fs');
-import { print } from 'util';
-import { unescapeLeadingUnderscores } from 'typescript';
+import * as Collections from 'typescript-collections';
+import { createLessThan } from 'typescript';
 
 const start = (): void => {
 
-    // solve_dec_4_pt1();
-    solve_dec_4_pt2();
+    // solve_dec_9_pt1();
+    solve_dec_9_pt1();
 };
 
 module.exports = {
     start
 };
 
-
-
-const solve_dec_4_pt1 = () => {
+const solve_dec_9_pt1 = () => {
     try {
-        const data = fs.readFileSync('src/test.dec4.txt', 'utf8');
-        const lines = data.split('\n').sort((a, b) => (a < b ? -1 : 1));
-        let currentGuard = "";
-        let guardLog = {};
-        for (let i = 0; i < lines.length; i++) {
-            const timestamp = lines[i].slice(0, 18);
-            const event = lines[i].slice(18).trim();
-            if (event.startsWith('Guard')) {
-                const guard = event.split(' ')[1];
-                currentGuard = guard;
-                if (!guardLog[guard]) guardLog[guard] = { 'log': [], 'totalSleep': 0, 'sleepTracker': {} };
+        let data = fs.readFileSync('src/test.dec8.txt', 'utf8');
+        const lines = data.split('\n');
+        const players = 438;
+        const maxMarbles = 7162600;
+        let scores = {};
+        let marbles = [0];
+        let position = 0;
+        let currentPlayer = 1;
+        for (let i = 1; i <= players; i++) {
+            scores[i] = { 'score': 0, 'played': [], 'scored': [] };
+        }
+        let timestamp = new Date().getTime();
+        for (let i = 1; i <= maxMarbles; i++) {
+            if (i % 10000 === 0) {
+                console.log("Processing " + i + ", " + (new Date().getTime() - timestamp));
             }
-            guardLog[currentGuard].log.push(lines[i]);
-        }
-        let mostAsleepGuard = null;
-        for (let guard in guardLog) {
-            if (mostAsleepGuard === null) mostAsleepGuard = guardLog[guard];
-
-            evaluateGuard(guardLog[guard]);
-            if (guardLog[guard].totalSleep > mostAsleepGuard.totalSleep) mostAsleepGuard = guardLog[guard];
-        }
-        // console.log(guardLog);
-        // console.log(mostAsleepGuard);
-        return guardLog;
-    } catch (e) {
-        console.log('Error:', e.stack);
-    }
-    return -1;
-}
-
-const evaluateGuard = (guard) => {
-    let startRange = '';
-    let endRange = '';
-    for (let i = 0; i < 60; i++) {
-        guard.sleepTracker[i] = 0;
-    }
-    for (let i = 0; i < guard.log.length; i++) {
-        const timestamp = guard.log[i].slice(0, 18);
-        const event = guard.log[i].slice(18).trim();
-        if (event.startsWith('Guard')) {
-            continue;
-        } else if (event.startsWith('falls')) {
-            startRange = timestamp;
-        } else if (event.startsWith('wakes')) {
-            endRange = timestamp;
-            const startRangeInt = parseInt(startRange.split(':')[1].slice(0, 2));
-            const endRangeInt = parseInt(endRange.split(':')[1].slice(0, 2));
-            guard.totalSleep = guard.totalSleep + (endRangeInt - startRangeInt);
-            for (let t = startRangeInt; t < endRangeInt; t++) {
-                guard.sleepTracker[t] += 1;
-            }
-            startRange = '';
-            endRange = '';
-        }
-    }
-}
-
-const solve_dec_4_pt2 = () => {
-    try {
-        let guardLog = solve_dec_4_pt1();
-        let numberOfMinutesSleeping = 0;
-        let mostAsleepMinute = '0';
-        let mostAsleepGuard = null;
-        for (let guard in guardLog) {
-            if (mostAsleepGuard === null) mostAsleepGuard = guardLog[guard];
-            for (let minute in guardLog[guard].sleepTracker) {
-                console.log("Checking " + guard + " minute " + minute);
-                if (guardLog[guard].sleepTracker[minute] > numberOfMinutesSleeping) {
-                    mostAsleepMinute = minute;
-                    mostAsleepGuard = guardLog[guard];
-                    numberOfMinutesSleeping = guardLog[guard].sleepTracker[minute];
+            // scores[currentPlayer].played.push(i);
+            if (marbles.length < 2) {
+                marbles.push(i);
+                position = i;
+            } else if (i % 23 === 0) {
+                // scores[currentPlayer].scored.push(i);
+                scores[currentPlayer].score += i;
+                position = position - 7;
+                if (position < 0) position += marbles.length;
+                const bonus = marbles.splice(position, 1)[0];
+                //scores[currentPlayer].scored.push(bonus);
+                scores[currentPlayer].score += bonus;
+            } else {
+                const left = (position + 2) % marbles.length;
+                if (left === 0) {
+                    marbles.push(i);
+                    position = marbles.length - 1;
+                } else {
+                    marbles.splice(left, 0, i);
+                    position = left;
                 }
             }
+            // console.log("[" + currentPlayer + "] " + position + "  " + JSON.stringify(marbles));
+            currentPlayer += 1;
+            if (currentPlayer > players) currentPlayer = 1;
         }
-        console.log("Most Asleep Minute: " + mostAsleepMinute);
-        console.log("Most Asleep Guard: ", mostAsleepGuard);
-        console.log("Times Asleep: " + numberOfMinutesSleeping);
+        let maxScore = 0;
+        for (let i = 1; i <= players; i++) {
+            if (scores[i].score > maxScore) maxScore = scores[i].score;
+        }
+        console.log(maxScore);
+
         return '';
     } catch (e) {
         console.log('Error:', e.stack);
     }
     return -1;
 }
+
+
+const solve_dec_9_pt2 = () => {
+    try {
+        let data = fs.readFileSync('src/test.dec8.txt', 'utf8');
+        const lines = data.split('\n');
+        const players = 438;
+        const maxMarbles = 7162600;
+        let scores = {};
+        let marbles = new Collections.LinkedList<number>();
+        marbles.add(0);
+        let position = 0;
+        let currentPlayer = 1;
+        for (let i = 1; i <= players; i++) {
+            scores[i] = { 'score': 0 };
+        }
+        let timestamp = new Date().getTime();
+        for (let i = 1; i <= maxMarbles; i++) {
+            if (i % 10000 === 0) {
+                console.log("Processing " + i + ", " + (new Date().getTime() - timestamp));
+            }
+            if (marbles.size() < 2) {
+                marbles.add(i);
+                position = i;
+            } else if (i % 23 === 0) {
+                scores[currentPlayer].score += i;
+                position = position - 7;
+                if (position < 0) position += marbles.size();
+                // let date1 = new Date().getTime();
+                const bonus = marbles.removeElementAtIndex(position);
+                // console.log("Scoring Round - " + (new Date().getTime() - date1));
+                scores[currentPlayer].score += bonus;
+            } else {
+                const left = (position + 2) % marbles.size();
+                if (left === 0) {
+                    // let date1 = new Date().getTime();
+                    marbles.add(i);
+                    // console.log("Append - " + (new Date().getTime() - date1));
+                    position = marbles.size() - 1;
+                } else {
+                    // let date1 = new Date().getTime();
+                    marbles.add(i, left);
+                    // console.log("Insert - " + (new Date().getTime() - date1));
+                    position = left;
+                }
+            }
+            currentPlayer += 1;
+            if (currentPlayer > players) currentPlayer = 1;
+        }
+        let maxScore = 0;
+        for (let i = 1; i <= players; i++) {
+            if (scores[i].score > maxScore) maxScore = scores[i].score;
+        }
+        console.log(maxScore);
+
+        return '';
+    } catch (e) {
+        console.log('Error:', e.stack);
+    }
+    return -1;
+}
+
 
 start();
 
