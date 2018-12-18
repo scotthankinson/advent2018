@@ -6,8 +6,6 @@ import { isConstructorTypeNode } from 'typescript';
 const start = (): void => {
 
     solve_dec_15_pt1('src/test.dec15.6.txt');
-
-    //solve_dec_15_pt2('51589');
 };
 
 module.exports = {
