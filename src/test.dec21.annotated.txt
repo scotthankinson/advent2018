@@ -1,0 +1,273 @@
+seti 123 0 3            Set Register 3 to 123     
+bani 3 456 3            Set Register 3 to Register 3 && 456
+eqri 3 72 3             Set Register 3 to 1
+addr 3 5 5              Set Register 5 to Register 3 + Register 5
+seti 0 0 5              Set Register 5 to 0                                                             Core Calculation for R3:
+seti 0 9 3              Set Register 3 to 0                                                             R3: 0
+bori 3 65536 1          Set Register 1 to Register 3 || 65536               2^16                        R1: R3 || 65536
+seti 14906355 8 3       Set Register 3 to 14906355                                                      R3: 14906355
+bani 1 255 4            Set Register 4 to Register 1 && 255                 2^8     R4 < 256            R4: R1 && 256   87 
+addr 3 4 3              Set Register 3 to Register 3 + Register 4                   R3 + R4             R3: 14906355 + R1 && 256
+bani 3 16777215 3       Set Register 3 to Register 3 && 16777215            2^24    R3 < 16777215       R3: (14906355 + R1 && 256) && 2^24
+muli 3 65899 3          Set Register 3 to Register 3 * 65899                2^16    R3 * 2^16           R3: ((14906355 + R1 && 256) && 2^24) * 2^16
+bani 3 16777215 3       Set Register 3 to Register 3 && 16777215            2^24    R3 < 16777215       R3: (((14906355 + R1 && 256) && 2^24) * 2^16) && 2^24
+gtir 256 1 4            Set Register 4 to 1 if 256 > Register 1  
+addr 4 5 5              Set Register 5 to Register 4 + Register 5
+addi 5 1 5              Set Register 5 to Register 5 +1
+seti 27 8 5             Set Register 5 to 27
+seti 0 4 4              Set Register 4 to 0
+addi 4 1 2              Set Register 2 to Register 4 + 1
+muli 2 256 2            Set Register 2 to Register 2 * 256
+gtrr 2 1 2              Set Register 2 to 1 if Register 2 > Register 1
+addr 2 5 5              Set Register 5 to Register 2 + Register 5           
+addi 5 1 5              Set Register 5 to Register 5 + 1                        Skip 24
+seti 25 1 5             Set Register 5 to 25 
+addi 4 1 4              Set Register 4 to Register 4 + 1
+seti 17 2 5             Set Register 5 to 17                                    Jump to 18
+setr 4 9 1              Set Register 4 to Register 1
+seti 7 0 5              Set Register 5 to 7                                     Jump to 7
+eqrr 3 0 4              Set Register 4 to 1 if Register 3 == Register 0 
+addr 4 5 5              Set Register 5 to Register 4 + Register 5               Probably Kill the Program
+seti 5 3 5              Set Register 5 to Register 5 + 3                        Kill the Program
+
+Core Loop:  18-25 (skip 23)
+
+
+
+2 * 256 > 1 causes a skip 18-20
+r2 * 256 < r1
+
+25000 Executions:
+   { '0': 1,
+     '1': 1,
+     '2': 1,
+     '3': 1,
+     '4': 0,
+     '5': 1,
+     '6': 4,
+     '7': 4,
+     '8': 10,
+     '9': 10,
+     '10': 10,
+     '11': 10,
+     '12': 10,
+     '13': 10,
+     '14': 10,
+     '15': 7,
+     '16': 3,
+     '17': 7,
+     '18': 35699,
+     '19': 35699,
+     '20': 35699,
+     '21': 35699,
+     '22': 35693,
+     '23': 6,
+     '24': 35693,
+     '25': 35692,
+     '26': 6,
+     '27': 6,
+     '28': 3,
+     '29': 3,
+     '30': 3 },
+
+
+
+
+R3 Values over Time:
+Set for 3173684 -- 12 Values (7 from 14960355)
+Set { 
+     0,
+     123,
+     72,
+     1,
+     14906355,
+     982313888145,
+     7891345,
+     520031744155,
+     5157019,
+     5157020,
+     339842460980,
+     3173684 } }
+// Set with better filters 
+  history3: Set { 14906355, 5157020 },
+
+// Set for 5675749 -- 21 Values   (16 from 982313888145)
+Set {
+     0,
+     123,
+     72,
+     1,
+     14906355,
+     982313888145,
+     7891345,
+     520031744155,
+     5157019,
+     5157020,
+     339842460980,
+     3173684,
+     14906407,
+     982317314893,
+     11318093,
+     11318202,
+     745858193598,
+     10279102,
+     10279151,
+     677385771749,
+     5675749 } }
+// Set with better filtersSet 
+{ 14906355, 5157020, 14906407, 11318202, 10279151 },
+
+
+// Set for 13738159 -- 30 Values   (25 from 982313888145)
+Set {
+     0,
+     123,
+     72,
+     1,
+      14906355,
+     982313888145,
+     7891345,
+     520031744155,
+     5157019,
+      5157020,
+     339842460980,
+     3173684,
+      14906407,
+     982317314893,
+     11318093,
+      11318202,
+     745858193598,
+      10279102,
+     10279151,
+     677385771749,
+     5675749,
+      14906584,
+     982328979016,
+     6205000,
+     6205154,
+     408913443446,
+     2357878,
+      2357965,
+     155387535535,
+     13738159 } }
+Set for with better filters
+   Set { // Size 7
+     14906355,
+     5157020,
+     14906407,
+     11318202,
+     10279151,
+     14906584,
+     2357965 },  
+     
+     
+
+Hypothesis:  Next value should be ~40-42 in length
+             Next value should be ~53-55 in length
+
+
+Set > 100:   Numbers betwen 13,738,159 & 7,891,345
+Set {
+Goal Post 7891345
+     11318093,                    No solution after R3 > 1000
+     11318202,                    No solution after R3 > 1000
+     10279102,                    No solution after R3 > 1000
+     10279151,                    No solution after R3 > 1000
+Goal Post  13738159,
+     10055666,                    No solution after R3 > 1000
+     10055875,
+     873248,
+     873333,
+     9412476,
+     9412567,
+     8299997, Solves it in 944512
+     1367337,
+     1367364,
+     8089042,
+     8089197,
+},
+
+
+Set {
+     7891345,
+     13738159,
+     8299997,
+    13621657, Solves it in 3942992
+     11665767,  Solves it in 4319780
+     11538872,  Solves it in 4641853
+     10599854,                    No solution after R3 > 100
+     10600031,                    No solution after R3 > 100
+     12054709, Solves it in 4960440
+     8298278,
+     9536791,
+     11176506,
+     11708156,
+     12455748,
+     11035581, Solves it in 8859630
+     8870392,  Solves it in 9612521
+     8752623,
+     10226410,
+     11454848,
+     8104551,
+     9209408,
+     10258561,
+     9666414,
+     13597354,  Solves after 98, 12995163  (R3 size = 98)
+Extended to 250
+     8834833    Sovlves after 101, 13599524},
+     ...
+     11584661,  Solves after 146, 18115092
+     ...
+     11444731, Solves after 182, 22866978
+     ...
+     10497434,Solves after 201, 25501281
+     ...
+     8004344, Solves in 248, 33651069
+Extended to 1050
+     ...
+     11593544, Solves in 262, 34381341
+     ...
+     9533398,  Solves in 282, 37571329
+     ...
+     11244604, Solves it in 300, 39924259
+     ...
+     8847647,  Solves it in 306, 41334438
+     ...
+     13159213, Solves it in 324, 43311608
+    ...
+     13377253,  Solves in 543, 72333458
+Tweaked to start from (Last - 1)     
+     10942053,  Solves at 72702508
+     ...
+     12104937, Solves at 75998510
+     ...
+     8995110, Solves at 81375255
+     ...
+     8119213,  Solves at 91830962
+     ...
+     13479679,  Solves at 106549542
+     ...
+     8244381, Solves at 113075280
+     ...
+     12781866, Solves at 118111621
+     ...
+     9924229,  Solved at 131011474 in 96
+     ...
+     12990553, Solved at 145595490 in 98 
+     ...
+     8435417,  Solved at 157969438 in 95 
+--> See if we can run until SET stops expanding?
+    380000000 instructions --> 2360 possible answers
+    600000000 instructions --> 3618 possible answers
+    800000000 instructions --> 4768 possible answers
+    1000000000 instructions --> 5967 possible answers
+    1500000000 instructions --> 9004 possible answers
+    2000000000 instructions --> 11800 possible answers
+    Stopped growing between 2300000000 and 2400000000 at 13969
+--> Run for ALL the things!
+  12671412,
+  10066102,
+  ...13965 entries truncated until...
+  12464363,  Stopped at 2388166252, penultimate
+  13202558 }, // Kept going past 2.4B
+  
