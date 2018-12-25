@@ -6,16 +6,16 @@ import { print } from 'util';
 import { resolve } from 'bluebird';
 
 const start = (): void => {
-    solve_dec_17_pt1();
+    solve_dec_25_pt1();
 };
 
 module.exports = {
     start
 };
 
-const solve_dec_17_pt1 = () => {
+const solve_dec_25_pt1 = () => {
     try {
-        let data = fs.readFileSync('src/test.dec19.txt', 'utf8');
+        let data = fs.readFileSync('src/test.dec25.txt', 'utf8');
         const lines = data.split('\n');
 
         return '';
@@ -25,9 +25,9 @@ const solve_dec_17_pt1 = () => {
     return -1;
 }
 
-const solve_dec_17_pt2 = (input) => {
+const solve_dec_25_pt2 = (input) => {
     try {
-        let data = fs.readFileSync('src/test.dec13.txt', 'utf8');
+        let data = fs.readFileSync('src/test.dec25.txt', 'utf8');
         const lines = data.split('\n');
 
         return '';
